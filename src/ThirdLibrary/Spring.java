@@ -9,6 +9,9 @@ public class Spring {
     private double k;
     public boolean modelingOn;
 
+    private double timerValue; // Значение таймера в секундах
+    private double referenceLength; // Опорное значение текущей длины пружины
+
     public Spring(double initialLength, double maxCompression, double k, double F) {
         this.initialLength = initialLength;
         this.maxCompression = maxCompression;
@@ -17,77 +20,61 @@ public class Spring {
         this.modelingOn = false;
         this.compressionForce = F;
         this.k = k;
+        this.timerValue = 0.0; // Инициализация таймера
+        this.referenceLength = initialLength; // Инициализация опорной длины
     }
 
-    public double getForse() {
-        return this.compressionForce;
+    public boolean getCompress() {
+        return this.isCompressed;
     }
 
-    public void setForse(double F) {
-        if (!this.modelingOn) {
-            this.compressionForce = F;
-        }
+    public void setCompress(boolean compress) {
+        this.isCompressed = compress;
     }
 
-    public double getK() {
-        return this.k;
+    public boolean getModeling() {
+        return this.isCompressed;
     }
 
-    public void setK(double k) {
-        if (!this.modelingOn) {
-            this.k = k;
-        }
-    }
-
-
-    public void applyForce(double force, long totalTimeMillis) {
-        this.compressionForce = force;
-        this.isCompressed = true;
-        simulateCompression(totalTimeMillis);
-    }
-
-    public void release(double force, long totalTimeMillis) {
-        this.compressionForce = force;
-        this.isCompressed = false;
-        simulateRelease(totalTimeMillis);
+    public void setModeling(boolean isModeling) {
+        this.modelingOn = isModeling;
     }
 
     public double getCurrentLength() {
         return currentLength;
     }
 
+    public void updateTimer(double elapsedSeconds) {
 
-    private double simulateCompression(long totalTimeMillis) {
-        // Если моделирование не включено, возвращаем текущую длину
-        if (!this.modelingOn) return this.currentLength;
-
-        // Переводим миллисекунды в секунды
-        double totalTimeSeconds = totalTimeMillis / 1000.0;
-
-        if (currentLength > maxCompression) {
-            currentLength -= (this.compressionForce / this.k) * (1 - Math.exp(-k * totalTimeSeconds));
-        }
-        return this.currentLength;
-    }
-
-    private double simulateRelease(long totalTimeMillis) {
-        // Если моделирование не включено, возвращаем текущую длину
-        if (!this.modelingOn) return this.currentLength;
-
-        // Переводим миллисекунды в секунды
-        double totalTimeSeconds = totalTimeMillis / 1000.0;
-
-        // Восстанавливаем пружину до начальной длины, если она не превышает её
-        if (currentLength < initialLength) {
-            currentLength += (this.compressionForce / this.k) * (1 - Math.exp(-k * totalTimeSeconds));
-
-            // Ограничиваем длину пружины, чтобы она не превышала начальную
+        double deltaLength = (compressionForce / k) * (1 - Math.exp(-k * elapsedSeconds));
+        System.out.println(elapsedSeconds);
+        System.out.println(deltaLength);
+        if (isCompressed) {
+            // Моделирование сжатия
+            currentLength -= deltaLength;
+            if (currentLength < maxCompression) {
+                currentLength = maxCompression;
+            }
+        } else {
+            currentLength += deltaLength;
             if (currentLength > initialLength) {
                 currentLength = initialLength;
             }
         }
-        return this.currentLength;
     }
 
+    void resetTimer() {
+        this.timerValue = 0.0; // Обнуляем таймер
+        this.referenceLength = this.currentLength; // Сохраняем опорное значение текущей длины пружины
+    }
+
+    public void start() {
+        this.modelingOn = true;
+    }
+
+    // останов моделирования
+    public void stop() {
+        this.modelingOn = false;
+    }
 
 }

@@ -15,7 +15,14 @@
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="fcd7f" class="javax.swing.JProgressBar" binding="springView">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+        </children>
       </grid>
       <component id="818e5" class="javax.swing.JButton" binding="releaseSpringButton" default-binding="true">
         <constraints>
@@ -127,11 +134,9 @@
           <text value=""/>
         </properties>
       </component>
-      <component id="5a256" class="javax.swing.JTextField" binding="t">
+      <component id="86c15" class="javax.swing.JSpinner" binding="spnTimeMult">
         <constraints>
-          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>
