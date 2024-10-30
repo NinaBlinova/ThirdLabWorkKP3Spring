@@ -1,84 +1,92 @@
 package ThirdLibrary;
 
 public class Spring {
-    private double initialLength; // Начальная длина пружины
-    private double maxCompression; // Максимальное сжатие
+    final private double initialLength; // Начальная длина пружины
+    final private double maxCompression; // Максимальное сжатие
     private double currentLength; // Текущая длина пружины
     private boolean isCompressed; // Сжата ли пружина
     private double compressionForce; // Сила воздействия
-    private double time; // Время в моделировании
     private double k;
+    public boolean modelingOn;
 
-    public Spring(double initialLength, double maxCompression, double k) {
+    public Spring(double initialLength, double maxCompression, double k, double F) {
         this.initialLength = initialLength;
         this.maxCompression = maxCompression;
         this.currentLength = initialLength;
         this.isCompressed = false;
-        this.time = 0;
+        this.modelingOn = false;
+        this.compressionForce = F;
         this.k = k;
     }
 
-    public void applyForce(double force) {
+    public double getForse() {
+        return this.compressionForce;
+    }
+
+    public void setForse(double F) {
+        if (!this.modelingOn) {
+            this.compressionForce = F;
+        }
+    }
+
+    public double getK() {
+        return this.k;
+    }
+
+    public void setK(double k) {
+        if (!this.modelingOn) {
+            this.k = k;
+        }
+    }
+
+
+    public void applyForce(double force, long totalTimeMillis) {
         this.compressionForce = force;
         this.isCompressed = true;
-        simulateCompression();
+        simulateCompression(totalTimeMillis);
     }
 
-    public void release() {
+    public void release(double force, long totalTimeMillis) {
+        this.compressionForce = force;
         this.isCompressed = false;
-        simulateRelease();
+        simulateRelease(totalTimeMillis);
     }
-
-    private void simulateCompression() {
-        // Экспоненциальная модель сжатия
-        double targetLength = maxCompression;
-        double decayRate = 0.01;
-        while ((int) currentLength > (int) targetLength) {
-            currentLength -= decayRate * (currentLength - targetLength + compressionForce / k);
-            time += 0.1; // Увеличиваем время моделирования
-            //printStatus();
-            try {
-                Thread.sleep(100); // Задержка для визуализации процесса
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        // Устанавливаем текущую длину на целевую, чтобы избежать небольших колебаний
-        currentLength = targetLength;
-    }
-
-    private void simulateRelease() {
-        // Экспоненциальная модель разжатия
-        double targetLength = initialLength;
-        double decayRate = 0.01; // Коэффициент разжатия, можно настроить
-        while ((int) currentLength < (int) targetLength) {
-            currentLength += decayRate * (targetLength - currentLength + compressionForce / k);
-            time += 0.1; // Увеличиваем время моделирования
-            //printStatus();
-            try {
-                Thread.sleep(100); // Задержка для визуализации процесса
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        // Устанавливаем текущую длину на целевую, чтобы избежать небольших колебаний
-        currentLength = targetLength;
-    }
-
-//    private void printStatus() {
-//        System.out.printf("Время: %.1f, Текущая длина пружины: %.2f\n", time, currentLength);
-//    }
 
     public double getCurrentLength() {
         return currentLength;
     }
 
-    public double getTime() {
-        return time;
+
+    private double simulateCompression(long totalTimeMillis) {
+        // Если моделирование не включено, возвращаем текущую длину
+        if (!this.modelingOn) return this.currentLength;
+
+        // Переводим миллисекунды в секунды
+        double totalTimeSeconds = totalTimeMillis / 1000.0;
+
+        if (currentLength > maxCompression) {
+            currentLength -= (this.compressionForce / this.k) * (1 - Math.exp(-k * totalTimeSeconds));
+        }
+        return this.currentLength;
     }
 
-    public boolean isCompressed() {
-        return isCompressed;
+    private double simulateRelease(long totalTimeMillis) {
+        // Если моделирование не включено, возвращаем текущую длину
+        if (!this.modelingOn) return this.currentLength;
+
+        // Переводим миллисекунды в секунды
+        double totalTimeSeconds = totalTimeMillis / 1000.0;
+
+        // Восстанавливаем пружину до начальной длины, если она не превышает её
+        if (currentLength < initialLength) {
+            currentLength += (this.compressionForce / this.k) * (1 - Math.exp(-k * totalTimeSeconds));
+
+            // Ограничиваем длину пружины, чтобы она не превышала начальную
+            if (currentLength > initialLength) {
+                currentLength = initialLength;
+            }
+        }
+        return this.currentLength;
     }
 
 

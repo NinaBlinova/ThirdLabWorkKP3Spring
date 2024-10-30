@@ -24,6 +24,12 @@ public class Var10 {
 
 
     public Var10() {
-        // Инициализация модели пружины
+
+
+
+        double forse = Double.parseDouble(F.getText());
+        double koef = Double.parseDouble(k.getText());
+        double timeK = Double.parseDouble(t.getText());
+        double maxCompression = Double.parseDouble(maxL.getText());
     }
 }
