@@ -28,7 +28,7 @@ public class Var10 {
         k.setText("2.0");
 
         // Настройка JSpinner
-        SpinnerModel model = new SpinnerNumberModel(1., 1., 5., 0.1); // начальное значение, минимальное, максимальное, шаг
+        SpinnerModel model = new SpinnerNumberModel(10, 10, 100, 10); // начальное значение, минимальное, максимальное, шаг
         spnTimeMult.setModel(model);
 
         initializeSpring(); // Инициализация пружины
@@ -104,6 +104,4 @@ public class Var10 {
         k.setEnabled(true);
         spnTimeMult.setEnabled(true);
     }
-
-
 }

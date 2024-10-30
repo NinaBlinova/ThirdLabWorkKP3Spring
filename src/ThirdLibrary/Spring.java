@@ -47,8 +47,6 @@ public class Spring {
     public void updateTimer(double elapsedSeconds) {
 
         double deltaLength = (compressionForce / k) * (1 - Math.exp(-k * elapsedSeconds));
-        System.out.println(elapsedSeconds);
-        System.out.println(deltaLength);
         if (isCompressed) {
             // Моделирование сжатия
             currentLength -= deltaLength;
