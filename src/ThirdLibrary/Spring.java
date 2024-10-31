@@ -41,25 +41,58 @@ public class Spring {
     }
 
     public double getCurrentLength() {
-        return currentLength;
+        if (isCompressed){
+            this.currentLength = simulateCompression();
+        }
+        else{
+            this.currentLength = simulateRelease();
+        }
+        return this.currentLength;
     }
 
-    public void updateTimer(double elapsedSeconds) {
+    private double simulateCompression() {
+        // Если моделирование не включено, возвращаем текущую длину
+        if (!this.modelingOn) return this.currentLength;
 
-        double deltaLength = (compressionForce / k) * (1 - Math.exp(-k * elapsedSeconds));
-        if (isCompressed) {
-            // Моделирование сжатия
-            currentLength -= deltaLength;
-            if (currentLength < maxCompression) {
-                currentLength = maxCompression;
-            }
-        } else {
-            currentLength += deltaLength;
+        if (currentLength > maxCompression) {
+            currentLength -= (this.compressionForce / this.k) * (1 - Math.exp(-k * this.timerValue));
+        }
+        return this.currentLength;
+    }
+
+    private double simulateRelease() {
+        // Если моделирование не включено, возвращаем текущую длину
+        if (!this.modelingOn) return this.currentLength;
+
+        // Восстанавливаем пружину до начальной длины, если она не превышает её
+        if (currentLength < initialLength) {
+            currentLength += (this.compressionForce / this.k) * (1 - Math.exp(-k * this.timerValue));
+
+            // Ограничиваем длину пружины, чтобы она не превышала начальную
             if (currentLength > initialLength) {
                 currentLength = initialLength;
             }
         }
+        return this.currentLength;
     }
+
+
+    public void updateTimer(double elapsedSeconds) {
+        if (!modelingOn) return; // Если моделирование не включено, ничего не делаем
+
+        this.timerValue += elapsedSeconds;
+
+        // Получаем текущую длину пружины
+        double currentLength = getCurrentLength();
+
+        // Проверяем состояние пружины
+        if (currentLength <= maxCompression) {
+            stop(); // Останавливаем моделирование
+        } else if (currentLength >= initialLength) {
+            stop(); // Останавливаем моделирование
+        }
+    }
+
 
     void resetTimer() {
         this.timerValue = 0.0; // Обнуляем таймер
@@ -68,6 +101,7 @@ public class Spring {
 
     public void start() {
         this.modelingOn = true;
+        this.timerValue = 0;
     }
 
     // останов моделирования

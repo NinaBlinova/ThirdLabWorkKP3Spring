@@ -1,6 +1,7 @@
 package ThirdLibrary;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -28,7 +29,7 @@ public class Var10 {
         k.setText("2.0");
 
         // Настройка JSpinner
-        SpinnerModel model = new SpinnerNumberModel(10, 10, 100, 10); // начальное значение, минимальное, максимальное, шаг
+        SpinnerModel model = new SpinnerNumberModel(100, 100, 10000, 100); // начальное значение, минимальное, максимальное, шаг
         spnTimeMult.setModel(model);
 
         initializeSpring(); // Инициализация пружины
@@ -38,6 +39,7 @@ public class Var10 {
             public void actionPerformed(ActionEvent e) {
                 // вычисление времени шага
                 double time = Double.parseDouble(spnTimeMult.getValue().toString());
+
                 // инкремент времени моделирования
                 timeValue += time;
                 // обновление таймера в модели пружины
@@ -105,3 +107,6 @@ public class Var10 {
         spnTimeMult.setEnabled(true);
     }
 }
+
+
+
