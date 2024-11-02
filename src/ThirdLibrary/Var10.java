@@ -1,7 +1,6 @@
 package ThirdLibrary;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,8 +15,8 @@ public class Var10 {
     private JTextField maxL; // максимальная длина
     private JTextField F; // сила воздействия
     private JTextField k; // максимальный коэффициент сжатия
-    private JSpinner spnTimeMult;
     private JProgressBar springView;
+    private JSlider speedSlader;
 
     private double timeValue = 0;
     private Spring mySpring; // экземпляр пружины
@@ -27,49 +26,84 @@ public class Var10 {
         maxL.setText("40.0");
         F.setText("5.0");
         k.setText("2.0");
-
-        // Настройка JSpinner
-        SpinnerModel model = new SpinnerNumberModel(100, 100, 10000, 100); // начальное значение, минимальное, максимальное, шаг
-        spnTimeMult.setModel(model);
-
+        JSlider speed = new JSlider(0, 100, 2000, 1000);
+        speedSlader.setModel(speed.getModel());
         initializeSpring(); // Инициализация пружины
 
         // Создание и настройка таймера
         javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // вычисление времени шага
-                double time = Double.parseDouble(spnTimeMult.getValue().toString());
-
+                double time = speedSlader.getValue();
                 // инкремент времени моделирования
                 timeValue += time;
                 // обновление таймера в модели пружины
                 mySpring.updateTimer(time);
                 // вычисление текущей длины пружины
-                double currentLength = mySpring.getCurrentLength();
-
-                springView.setValue((int) currentLength);
+                double maxLength = Double.parseDouble(maxL.getText());
+                double compressionPercentage = (mySpring.getCurrentLength() / maxLength) * 100;
+                springView.setValue((int) compressionPercentage);
                 changeT.setText("Прошедшее время: " + timeValue + " с");
-                changeL.setText(String.valueOf(currentLength));
+                changeL.setText(String.valueOf(mySpring.getCurrentLength()));
             }
         });
 
         compressSpringButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mySpring.start();
-                lockParameters(); // Блокируем параметры перед началом процесса
+                timer.stop();
                 mySpring.setCompress(true);
-                timer.start(); // запускаем таймер для обновления
+                mySpring.startStart();
+                lockParameters();
+
+                // Запускаем таймер для обновления
+                timer.start();
+
+                // Проверка состояния через отдельный таймер
+                new javax.swing.Timer(100, new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        if (mySpring.isAtCom()) {
+                            ((javax.swing.Timer) evt.getSource()).stop(); // Остановка этого таймера
+                            timeValue = 0;
+                            new javax.swing.Timer(100, new ActionListener() {
+                                public void actionPerformed(ActionEvent evt) {
+                                    if (mySpring.isAtRel()) {
+                                        ((javax.swing.Timer) evt.getSource()).stop(); // Остановка этого таймера
+                                        timeValue = 0;
+                                        timer.stop();
+                                        unlockParameters();
+                                    }
+                                }
+                            }).start();
+                        }
+                    }
+                }).start();
             }
         });
 
         releaseSpringButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mySpring.start();
-                lockParameters();
+                timer.stop();
                 mySpring.setCompress(false);
-                timer.start(); // запускаем таймер для обновления
+                mySpring.startStart();
+                lockParameters();
+
+                // Запускаем таймер для обновления
+                timer.start();
+
+                // Проверка состояния через отдельный таймер
+                new javax.swing.Timer(100, new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        if (mySpring.isAtRel()) {
+                            unlockParameters(); // Разблокировка параметров, если пружина разжата
+                            ((javax.swing.Timer) evt.getSource()).stop(); // Остановка этого таймера
+                            timer.stop();
+                            timeValue = 0;
+
+                        }
+                    }
+                }).start();
             }
         });
 
@@ -87,7 +121,7 @@ public class Var10 {
         double force = Double.parseDouble(F.getText());
         double coefficient = Double.parseDouble(k.getText());
         double length = Double.parseDouble(maxL.getText());
-        springView.setValue((int) length);
+        springView.setValue((int) length * 100);
         mySpring = new Spring(length, length / 3, coefficient, force);
     }
 
@@ -96,7 +130,6 @@ public class Var10 {
         maxL.setEnabled(false);
         F.setEnabled(false);
         k.setEnabled(false);
-        spnTimeMult.setEnabled(false);
     }
 
     // Метод для разблокировки параметров
@@ -104,8 +137,8 @@ public class Var10 {
         maxL.setEnabled(true);
         F.setEnabled(true);
         k.setEnabled(true);
-        spnTimeMult.setEnabled(true);
     }
+
 }
 
 
