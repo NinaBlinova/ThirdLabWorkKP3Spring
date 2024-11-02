@@ -1,8 +1,10 @@
 package ThirdLibrary;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 
 public class Var10 {
     public JPanel contentPane;
@@ -21,32 +23,41 @@ public class Var10 {
     private double timeValue = 0;
     private Spring mySpring; // экземпляр пружины
 
+    private GraphPanel graphPanel;
+
+    // Создание и настройка таймера
+    javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            // вычисление времени шага
+            double time = speedSlader.getValue();
+            // инкремент времени моделирования
+            timeValue += time;
+            // обновление таймера в модели пружины
+            mySpring.updateTimer(time);
+            // вычисление текущей длины пружины
+            double maxLength = Double.parseDouble(maxL.getText());
+            double compressionPercentage = (mySpring.getCurrentLength() / maxLength) * 100;
+            springView.setValue((int) compressionPercentage);
+            changeT.setText("Прошедшее время: " + timeValue + " с");
+            changeL.setText(String.valueOf(mySpring.getCurrentLength()));
+            graphPanel.updateCompression((int) compressionPercentage);
+        }
+    });
+
     public Var10() {
+
         // Установка значений по умолчанию
-        maxL.setText("40.0");
-        F.setText("5.0");
-        k.setText("2.0");
+        maxL.setText("77.0");
+        F.setText("100.0");
+        k.setText("14.0");
+
+        graphPanel = new GraphPanel();
+
         JSlider speed = new JSlider(0, 100, 2000, 1000);
         speedSlader.setModel(speed.getModel());
+
         initializeSpring(); // Инициализация пружины
 
-        // Создание и настройка таймера
-        javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // вычисление времени шага
-                double time = speedSlader.getValue();
-                // инкремент времени моделирования
-                timeValue += time;
-                // обновление таймера в модели пружины
-                mySpring.updateTimer(time);
-                // вычисление текущей длины пружины
-                double maxLength = Double.parseDouble(maxL.getText());
-                double compressionPercentage = (mySpring.getCurrentLength() / maxLength) * 100;
-                springView.setValue((int) compressionPercentage);
-                changeT.setText("Прошедшее время: " + timeValue + " с");
-                changeL.setText(String.valueOf(mySpring.getCurrentLength()));
-            }
-        });
 
         compressSpringButton.addActionListener(new ActionListener() {
             @Override
@@ -115,9 +126,11 @@ public class Var10 {
                 unlockParameters();
             }
         });
+
     }
 
     private void initializeSpring() {
+
         double force = Double.parseDouble(F.getText());
         double coefficient = Double.parseDouble(k.getText());
         double length = Double.parseDouble(maxL.getText());
