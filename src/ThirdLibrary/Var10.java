@@ -1,7 +1,6 @@
 package ThirdLibrary;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -19,6 +18,7 @@ public class Var10 {
     private JTextField k; // максимальный коэффициент сжатия
     private JProgressBar springView;
     private JSlider speedSlader;
+    private JButton saveButton;
 
     private double timeValue = 0;
     private Spring mySpring; // экземпляр пружины
@@ -47,8 +47,8 @@ public class Var10 {
     public Var10() {
 
         // Установка значений по умолчанию
-        maxL.setText("77.0");
-        F.setText("100.0");
+        maxL.setText("107.0");
+        F.setText("30.0");
         k.setText("14.0");
 
         graphPanel = new GraphPanel();
@@ -56,20 +56,15 @@ public class Var10 {
         JSlider speed = new JSlider(0, 100, 2000, 1000);
         speedSlader.setModel(speed.getModel());
 
-        initializeSpring(); // Инициализация пружины
-
 
         compressSpringButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                timer.stop();
                 mySpring.setCompress(true);
                 mySpring.startStart();
                 lockParameters();
-
                 // Запускаем таймер для обновления
                 timer.start();
-
                 // Проверка состояния через отдельный таймер
                 new javax.swing.Timer(100, new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
@@ -95,14 +90,11 @@ public class Var10 {
         releaseSpringButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                timer.stop();
                 mySpring.setCompress(false);
                 mySpring.startStart();
                 lockParameters();
-
                 // Запускаем таймер для обновления
                 timer.start();
-
                 // Проверка состояния через отдельный таймер
                 new javax.swing.Timer(100, new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
@@ -111,7 +103,6 @@ public class Var10 {
                             ((javax.swing.Timer) evt.getSource()).stop(); // Остановка этого таймера
                             timer.stop();
                             timeValue = 0;
-
                         }
                     }
                 }).start();
@@ -121,9 +112,15 @@ public class Var10 {
         existButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                timer.stop();
                 mySpring.resetTimer(); // обнуляем таймер и сохраняем состояние пружины перед выходом
                 unlockParameters();
+            }
+        });
+
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                initializeSpring(); // Инициализация пружины
             }
         });
 
@@ -135,7 +132,7 @@ public class Var10 {
         double coefficient = Double.parseDouble(k.getText());
         double length = Double.parseDouble(maxL.getText());
         springView.setValue((int) length * 100);
-        mySpring = new Spring(length, length / 3, coefficient, force);
+        mySpring = new Spring(length, length / coefficient, coefficient, force);
     }
 
     // Метод для блокировки параметров
