@@ -29,7 +29,7 @@ public class Spring {
     }
 
     public void setTimeValue(double time) {
-        this.timerValue  += time;
+        this.timerValue += time;
     }
 
 
@@ -47,14 +47,14 @@ public class Spring {
         if (!this.modelingOn) return this.currentLength;
         System.out.println(timerValue);
         if (this.currentLength > this.maxCompression) {
-            this.currentLength -= (this.currentLength / this.k) * (1 - Math.exp(-this.timerValue * this.compressionForce * this.k));
+            this.currentLength -= (this.currentLength / this.k) * (1 - Math.exp(-this.timerValue * this.compressionForce * this.k)) ;
         } else {
             this.timerValue = 0.0;
             // Обнуляем таймер при достижении максимального сжатия
             this.currentLength = this.maxCompression;
             this.isCompressed = false; // Переключаем состояние на разжатие
         }
-
+        System.out.println(currentLength);
         return this.currentLength;
     }
 
@@ -90,6 +90,7 @@ public class Spring {
 
     void resetTimer() {
         this.timerValue = 0.0; // Обнуляем таймер
+        this.modelingOn = false;
         this.referenceLength = this.currentLength; // Сохраняем опорное значение текущей длины пружины
     }
 

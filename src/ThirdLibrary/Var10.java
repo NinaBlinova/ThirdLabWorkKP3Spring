@@ -30,16 +30,17 @@ public class Var10 {
         public void actionPerformed(ActionEvent e) {
             // вычисление времени шага
             double time = speedSlader.getValue();
+            double l = mySpring.getCurrentLength();
             // инкремент времени моделирования
             timeValue += time;
             // обновление таймера в модели пружины
             mySpring.updateTimer(time);
             // вычисление текущей длины пружины
             double maxLength = Double.parseDouble(maxL.getText());
-            double compressionPercentage = (mySpring.getCurrentLength() / maxLength) * 100;
+            double compressionPercentage = (l / maxLength) * 100;
             springView.setValue((int) compressionPercentage);
             changeT.setText("Прошедшее время: " + timeValue + " с");
-            changeL.setText(String.valueOf(mySpring.getCurrentLength()));
+            changeL.setText(String.valueOf(l));
             graphPanel.updateCompression((int) compressionPercentage);
         }
     });
@@ -114,6 +115,7 @@ public class Var10 {
             public void actionPerformed(ActionEvent e) {
                 mySpring.resetTimer(); // обнуляем таймер и сохраняем состояние пружины перед выходом
                 unlockParameters();
+                timer.stop();
             }
         });
 
@@ -132,7 +134,7 @@ public class Var10 {
         double coefficient = Double.parseDouble(k.getText());
         double length = Double.parseDouble(maxL.getText());
         springView.setValue((int) length * 100);
-        mySpring = new Spring(length, length / coefficient, coefficient, force);
+        mySpring = new Spring(length, length / 3, coefficient, force);
     }
 
     // Метод для блокировки параметров
