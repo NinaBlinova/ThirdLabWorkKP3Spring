@@ -1,5 +1,7 @@
 package ThirdLibrary;
 
+import java.text.DecimalFormat;
+
 public class Spring {
     final private double initialLength; // Начальная длина пружины
     final private double maxCompression; // Максимальное сжатие
@@ -42,19 +44,21 @@ public class Spring {
         return this.currentLength;
     }
 
+    private double getCoef(){
+        return (this.compressionForce / this.k) * (1 - Math.exp(-timerValue * this.compressionForce));
+    }
+
     private double simulateCompression() {
         // Если моделирование не включено, возвращаем текущую длину
         if (!this.modelingOn) return this.currentLength;
-        System.out.println(timerValue);
         if (this.currentLength > this.maxCompression) {
-            this.currentLength -= (this.currentLength / this.k) * (1 - Math.exp(-this.timerValue * this.compressionForce * this.k)) ;
+            this.currentLength -= getCoef();
         } else {
             this.timerValue = 0.0;
             // Обнуляем таймер при достижении максимального сжатия
             this.currentLength = this.maxCompression;
             this.isCompressed = false; // Переключаем состояние на разжатие
         }
-        System.out.println(currentLength);
         return this.currentLength;
     }
 
@@ -63,8 +67,7 @@ public class Spring {
         if (!this.modelingOn) return this.currentLength;
         // Восстанавливаем пружину до начальной длины, если она не превышает её
         if (this.currentLength < this.initialLength) {
-            this.currentLength += (this.currentLength / this.k) * (1 - Math.exp(-this.timerValue * this.compressionForce * this.k));
-
+            this.currentLength += getCoef();
             // Ограничиваем длину пружины, чтобы она не превышала начальную
             if (this.currentLength > this.initialLength) {
                 this.currentLength = this.initialLength;
@@ -81,7 +84,6 @@ public class Spring {
         double currentLength = getCurrentLength();
         // Проверяем состояние пружины
         if (currentLength < this.maxCompression) {
-            currentLength = this.maxCompression;
             stopSpring(); // Останавливаем моделирование
         } else if (currentLength >= this.initialLength) {
             stopSpring(); // Останавливаем моделирование

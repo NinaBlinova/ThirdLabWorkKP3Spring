@@ -1,6 +1,7 @@
 package ThirdLibrary;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -52,7 +53,13 @@ public class Var10 {
         F.setText("30.0");
         k.setText("14.0");
 
+        // Инициализация Spring
+        Spring.setLayout(new BorderLayout()); // Установите нужный LayoutManager
+
+        // Инициализация graphPanel
         graphPanel = new GraphPanel();
+        Spring.add(graphPanel, BorderLayout.CENTER); // Добавляем graphPanel в центр Spring
+
 
         JSlider speed = new JSlider(0, 100, 2000, 1000);
         speedSlader.setModel(speed.getModel());
@@ -64,6 +71,8 @@ public class Var10 {
                 mySpring.setCompress(true);
                 mySpring.startStart();
                 lockParameters();
+                int currentCompression = (int) mySpring.getCurrentLength();
+                graphPanel.updateCompression(currentCompression);
                 // Запускаем таймер для обновления
                 timer.start();
                 // Проверка состояния через отдельный таймер
@@ -94,6 +103,8 @@ public class Var10 {
                 mySpring.setCompress(false);
                 mySpring.startStart();
                 lockParameters();
+                int currentCompression = (int) mySpring.getCurrentLength();
+                graphPanel.updateCompression(currentCompression);
                 // Запускаем таймер для обновления
                 timer.start();
                 // Проверка состояния через отдельный таймер
@@ -115,7 +126,10 @@ public class Var10 {
             public void actionPerformed(ActionEvent e) {
                 mySpring.resetTimer(); // обнуляем таймер и сохраняем состояние пружины перед выходом
                 unlockParameters();
+                int currentCompression = (int) mySpring.getCurrentLength();
+                graphPanel.updateCompression(currentCompression);
                 timer.stop();
+                timeValue = 0;
             }
         });
 
@@ -125,7 +139,6 @@ public class Var10 {
                 initializeSpring(); // Инициализация пружины
             }
         });
-
     }
 
     private void initializeSpring() {
