@@ -21,7 +21,7 @@ public class Var10 {
     private JSlider speedSlader;
     private JButton saveButton;
 
-    private double timeValue = 0;
+    private double valueTime = 0;
     private Spring mySpring; // экземпляр пружины
 
     private GraphPanel graphPanel;
@@ -33,14 +33,14 @@ public class Var10 {
             double time = speedSlader.getValue();
             double l = mySpring.getCurrentLength();
             // инкремент времени моделирования
-            timeValue += time;
+            valueTime += time;
             // обновление таймера в модели пружины
-            mySpring.updateTimer(time);
+            mySpring.updateTimer(valueTime);
             // вычисление текущей длины пружины
             double maxLength = Double.parseDouble(maxL.getText());
             double compressionPercentage = (l / maxLength) * 100;
             springView.setValue((int) compressionPercentage);
-            changeT.setText("Прошедшее время: " + timeValue + " с");
+            changeT.setText("Прошедшее время: " + valueTime + " с");
             changeL.setText(String.valueOf(l));
             graphPanel.updateCompression((int) compressionPercentage);
         }
@@ -76,16 +76,16 @@ public class Var10 {
                 // Запускаем таймер для обновления
                 timer.start();
                 // Проверка состояния через отдельный таймер
-                new javax.swing.Timer(100, new ActionListener() {
+                new javax.swing.Timer(1000, new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         if (mySpring.isAtCom()) {
                             ((javax.swing.Timer) evt.getSource()).stop(); // Остановка этого таймера
-                            timeValue = 0;
-                            new javax.swing.Timer(100, new ActionListener() {
+                            valueTime = 0;
+                            new javax.swing.Timer(1000, new ActionListener() {
                                 public void actionPerformed(ActionEvent evt) {
                                     if (mySpring.isAtRel()) {
                                         ((javax.swing.Timer) evt.getSource()).stop(); // Остановка этого таймера
-                                        timeValue = 0;
+                                        valueTime = 0;
                                         timer.stop();
                                         unlockParameters();
                                     }
@@ -108,13 +108,13 @@ public class Var10 {
                 // Запускаем таймер для обновления
                 timer.start();
                 // Проверка состояния через отдельный таймер
-                new javax.swing.Timer(100, new ActionListener() {
+                new javax.swing.Timer(1000, new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         if (mySpring.isAtRel()) {
                             unlockParameters(); // Разблокировка параметров, если пружина разжата
                             ((javax.swing.Timer) evt.getSource()).stop(); // Остановка этого таймера
                             timer.stop();
-                            timeValue = 0;
+                            valueTime = 0;
                         }
                     }
                 }).start();
@@ -129,7 +129,7 @@ public class Var10 {
                 int currentCompression = (int) mySpring.getCurrentLength();
                 graphPanel.updateCompression(currentCompression);
                 timer.stop();
-                timeValue = 0;
+                valueTime = 0;
             }
         });
 
@@ -142,7 +142,6 @@ public class Var10 {
     }
 
     private void initializeSpring() {
-
         double force = Double.parseDouble(F.getText());
         double coefficient = Double.parseDouble(k.getText());
         double length = Double.parseDouble(maxL.getText());

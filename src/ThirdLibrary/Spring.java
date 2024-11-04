@@ -31,7 +31,7 @@ public class Spring {
     }
 
     public void setTimeValue(double time) {
-        this.timerValue += time;
+        this.timerValue = time / 3600;
     }
 
 
@@ -59,6 +59,7 @@ public class Spring {
             this.currentLength = this.maxCompression;
             this.isCompressed = false; // Переключаем состояние на разжатие
         }
+        System.out.println(currentLength);
         return this.currentLength;
     }
 
