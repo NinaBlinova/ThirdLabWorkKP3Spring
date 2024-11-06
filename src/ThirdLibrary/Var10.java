@@ -66,7 +66,7 @@ public class Var10 {
 
         // Добавление слушателя для изменения значения слайдера
         speedSlader.addChangeListener(e -> {
-            int speedValue = speedSlader.getValue();
+            int speedValue = 2000 - speedSlader.getValue();
             updateTimerInterval(speedValue);
         });
 
