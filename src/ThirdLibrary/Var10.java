@@ -20,17 +20,16 @@ public class Var10 {
     private JProgressBar springView;
     private JSlider speedSlader;
     private JButton saveButton;
-
     private double valueTime = 0;
     private Spring mySpring; // экземпляр пружины
-
     private GraphPanel graphPanel;
+
 
     // Создание и настройка таймера
     javax.swing.Timer timer = new javax.swing.Timer(1000, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            // вычисление времени шага
             double time = speedSlader.getValue();
+            // вычисление времени шага
             double l = mySpring.getCurrentLength();
             // инкремент времени моделирования
             valueTime += time;
@@ -53,6 +52,7 @@ public class Var10 {
         F.setText("30.0");
         k.setText("14.0");
 
+
         // Инициализация Spring
         Spring.setLayout(new BorderLayout()); // Установите нужный LayoutManager
 
@@ -63,6 +63,12 @@ public class Var10 {
 
         JSlider speed = new JSlider(0, 100, 2000, 1000);
         speedSlader.setModel(speed.getModel());
+
+        // Добавление слушателя для изменения значения слайдера
+        speedSlader.addChangeListener(e -> {
+            int speedValue = speedSlader.getValue();
+            updateTimerInterval(speedValue);
+        });
 
 
         compressSpringButton.addActionListener(new ActionListener() {
@@ -163,6 +169,13 @@ public class Var10 {
         k.setEnabled(true);
     }
 
+    private void updateTimerInterval(int interval) {
+        if (timer != null) {
+            timer.stop(); // Останавливаем текущий таймер
+            timer.setDelay(interval); // Устанавливаем новый интервал
+            timer.start(); // Запускаем таймер с новым интервалом
+        }
+    }
 }
 
 

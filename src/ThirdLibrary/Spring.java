@@ -1,7 +1,5 @@
 package ThirdLibrary;
 
-import java.text.DecimalFormat;
-
 public class Spring {
     final private double initialLength; // Начальная длина пружины
     final private double maxCompression; // Максимальное сжатие
@@ -10,7 +8,6 @@ public class Spring {
     private double compressionForce; // Сила воздействия
     private double k;
     public boolean modelingOn;
-
     private double timerValue; // Значение таймера в секундах
     private double referenceLength; // Опорное значение текущей длины пружины
 
@@ -44,7 +41,7 @@ public class Spring {
         return this.currentLength;
     }
 
-    private double getCoef(){
+    private double getCoef() {
         return (this.compressionForce / this.k) * (1 - Math.exp(-timerValue * this.compressionForce));
     }
 
@@ -59,7 +56,6 @@ public class Spring {
             this.currentLength = this.maxCompression;
             this.isCompressed = false; // Переключаем состояние на разжатие
         }
-        System.out.println(currentLength);
         return this.currentLength;
     }
 
